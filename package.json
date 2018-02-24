@@ -1,0 +1,22 @@
+{
+  "name": "4dis",
+  "version": "1.0.0",
+  "description": "A bot to Run a Discord 4chan board",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CEbbinghaus/4Dis.git"
+  },
+  "author": "CEbbinghaus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CEbbinghaus/4Dis/issues"
+  },
+  "homepage": "https://github.com/CEbbinghaus/4Dis#readme",
+  "dependencies": {
+    "discord.js": "^11.3.0"
+  }
+}
