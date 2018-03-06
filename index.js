@@ -10,7 +10,9 @@ Bot.on('message', m => {
 	if(m.author.bot)return;
 	m.channel.type != "dm" ? m.delete() : null;
 	let c = {};
-	c.username = m.channel.type == "dm" ? "Anon" : parseInt(m.author.id.toString()).toString(36);
+	//c.username = m.channel.type == "dm" ? "Anon" : parseInt(m.author.id.toString()).toString(36);
+	c.username = "ﾠ";
+	c.color = "#36393e";
 	c.avatarURL = "https://pbs.twimg.com/profile_images/834093730244079616/0um-zqxI_400x400.jpg"
 	webhook.send(m.content.toString().replace("@everyone", "NOPE"), c);
 })
