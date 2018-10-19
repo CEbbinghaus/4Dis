@@ -1,38 +1,42 @@
 const s = require("./settings.json")
-var Base64 = require('js-base64').Base64;
-const {Client, WebhookClient} = require("discord.js");
+const fetch = require("node-fetch");
+const {Client, Attachment} = require("discord.js");
 let Bot = new Client();
-let webhook = new WebhookClient(s.wid, s.wt);
 Bot.on('ready', () => {
-	console.log("ready");
+	console.log(`Ready to Serve ${Bot.users.size} Active Users on ${Bot.guilds.size} Servers. Invite me here: https://discordapp.com/oauth2/authorize?client_id=${Bot.user.id}&scope=bot&permissions=67497153`);
 })
-
-Bot.on('message', m => {
-	if(m.author.bot)return;
-	m.channel.type != "dm" ? m.delete() : null;
-	let c = {};
-	c.username = m.channel.type == "dm" ? "Anon" : Base64.btoa(m.author.id.toString().toString());
-	//if(m.fil)
-	c.color = stringToColor(m.author.id.toString());
-	c.avatarURL = "https://pbs.twimg.com/profile_images/834093730244079616/0um-zqxI_400x400.jpg"
-	webhook.send(m.content.toString().replace("@everyone", "NOPE"), c);
-})
-
-Bot.on("guildMemberAdd", m => {
-	m.setNickname("anon")
+let asyncLoop = async (a, c) => {
+	let loop = async (a, c) => {
+		let e = a.shift();
+		await c(e);
+		if (e.length) loop(a, c);
+	}
+	loop(a, c);
+}
+process.on("unhandledRejection", console.error);
+Bot.on('message', async m => {
+	if (m.author.bot) return;
+	if (!m.isMentioned(Bot.user)) return;
+	let args = m.content.toLowerCase().replace(/<@(!|)\d{18}>/, "").trim().split(" ");
+	console.log(args);
+	if (args[0] == "dump") {
+		let a = [];
+		if (!args[1]) return m.reply("You are Missing some Arguments");
+		let q = args[1].split("/");
+		await fetch(`http://a.4cdn.org/${q[0]}/thread/${q[1]}.json`).then(r => {
+			r.json().then(j => {
+				j.posts.forEach(p => {
+					if (p.tim) {
+						a.push(`https://i.4cdn.org/${q[0]}/${p.tim}${p.ext}`);
+					}
+				})
+				asyncLoop(a, async (s) => {
+					await m.channel.send(new Attachment(s));
+					return;
+				})
+			})
+		})
+	}
 })
 
 Bot.login(s.t);
-
-var stringToColor = function(str) {
-	var hash = 0;
-	for (var i = 0; i < str.length; i++) {
-	  hash = str.charCodeAt(i) + ((hash << 5) - hash);
-	}
-	var colour = '#';
-	for (var i = 0; i < 3; i++) {
-	  var value = (hash >> (i * 8)) & 0xFF;
-	  colour += ('00' + value.toString(16)).substr(-2);
-	}
-	return colour;
-  };
